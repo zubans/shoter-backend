@@ -10,11 +10,11 @@ import (
 )
 
 type UserHandler struct {
-	userService *services.UserService
+	PlayerService *services.PlayerService
 }
 
-func New(userService *services.UserService) *UserHandler {
-	return &UserHandler{userService: userService}
+func New(userService *services.PlayerService) *UserHandler {
+	return &UserHandler{PlayerService: userService}
 }
 
 func (h *UserHandler) Create(c *gin.Context) {
@@ -25,4 +25,11 @@ func (h *UserHandler) Create(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
 		return
 	}
+
+	err := h.PlayerService.Create(c.Request.Context(), req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal error"})
+	}
+
+	c.Status(http.StatusOK)
 }

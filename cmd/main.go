@@ -13,6 +13,7 @@ import (
 	"os/signal"
 	"shuter-go/config"
 	"shuter-go/internal/handlers"
+	"shuter-go/internal/repositories"
 	"shuter-go/internal/routes"
 	"shuter-go/internal/services"
 	"shuter-go/internal/storage"
@@ -57,10 +58,11 @@ func main() {
 
 	r := gin.Default()
 
-	userService := services.New()
-	userHandler := handlers.New(userService)
+	playerRepo := repositories.NewDBPlayerRepo(db)
+	playerService := services.New(playerRepo, 10)
+	playerHandler := handlers.New(playerService)
 
-	routes.SetupUserRoutes(r, userHandler)
+	routes.SetupUserRoutes(r, playerHandler)
 
 	srv := &http.Server{
 		Addr:    cfg.RunAddr,
